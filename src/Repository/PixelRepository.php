@@ -5,6 +5,7 @@ namespace App\Repository;
 use App\Entity\Pixel;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
+use finfo;
 
 /**
  * @extends ServiceEntityRepository<Pixel>
@@ -26,7 +27,9 @@ class PixelRepository extends ServiceEntityRepository
     */
    public function addPixelToDatabase($x, $y, $hexColor)
    {
-        $pixel = new Pixel();
+        //updates the pixel if it already exists
+        $pixel = $this->getEntityManager()->find('App\Entity\Pixel', array('coor_x' => $x, 'coor_y' => $y));
+        if($pixel == null) $pixel = new Pixel();
         $pixel->setCoorX($x);
         $pixel->setCoorY($y);
         $pixel->setHexcolor($hexColor);
