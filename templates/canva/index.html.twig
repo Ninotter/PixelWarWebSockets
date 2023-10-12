@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Canvas Example</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <style>
+        canvas {
+            outline: 1px solid black;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="pixelWarCanva" width="1000" height="700"></canvas>
+    <div>
+        <input type="text" id="hexcolorstring" name="x" value="#000000">
+        <input type="color" id="hexcolor" name="hexcolor" value="#000000">
+    </div>
+    <script>
+        $(document).ready(function() {
+            $('#hexcolor').on('input', function() {
+                $('#hexcolorstring').val($(this).val());
+            });
+
+            $('#pixelWarCanva').on('click', function() {
+                var canvaEvent = document.getElementById("pixelWarCanva");
+                console.log($('#hexcolorstring').val());
+                paintPixelToCanva(canvaEvent, event.offsetX, event.offsetY, $('#hexcolorstring').val().replace('#', ''));
+            });
+
+            var pixelsJson = {{ pixelsjson|raw}};
+            var canvas = document.getElementById("pixelWarCanva");
+            for(var i = 0; i < pixelsJson.length; i++){
+                var pixel = pixelsJson[i];
+                paintPixelToCanva(canvas, pixel.x, pixel.y, pixel.hexcolor)
+            }
+        });
+        
+
+
+
+        function paintPixelToCanva(canva, x, y, hexColor){
+            var ctx = canva.getContext("2d");
+            ctx.fillStyle = "#" + hexColor;
+            ctx.fillRect( x, y, 1, 1 );
+        }
+    </script>
+</body>
+</html>
