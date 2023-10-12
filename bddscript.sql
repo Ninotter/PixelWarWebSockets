@@ -1,3 +1,6 @@
+drop database if exists pixelwar;
+create database pixelwar;
+use pixelwar;
 create table Pixel (
     coor_x SMALLINT unsigned,
     coor_y SMALLINT unsigned,
