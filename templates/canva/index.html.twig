@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Pixel War Websockets</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <style>
+    body {
+        margin: 0;
+        font-family: Arial, Helvetica, sans-serif;
+    }
+        #maincontent {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+        }
+        canvas {
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.5);
+            margin: 0 auto;
+            display: block;
+        }
+        #colorpicker{
+            margin: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div id="maincontent">
+    <h1>Pixel War Websockets</h1>
+    <h2>DIDIER Nino</h2>
+        <canvas id="pixelWarCanva" width="1000" height="700"></canvas>
+        <div id="colorpicker">
+            <input type="text" id="hexcolorstring" name="x" value="#000000">
+            <input type="color" id="hexcolor" name="hexcolor" value="#000000">
+        </div>
+        <a href="https://github.com/Ninotter" target="_blank">Github</a>
+    </div>
+    <script>
+        $(document).ready(function() {
+            const socket = new WebSocket('ws://localhost:8080');
+            var connected = false;
+            socket.addEventListener('open', function (event) {
+                connected = true;
+            });
+            socket.addEventListener('close', function (event) {
+                connected = false;
+            });
+            socket.addEventListener('message', function (event) {
+                pixel = JSON.parse(event.data);
+                paintPixelToCanva(document.getElementById("pixelWarCanva"), pixel.x, pixel.y, pixel.hexcolor)
+            });
+
+
+            $('#hexcolor').on('input', function() {
+                $('#hexcolorstring').val($(this).val());
+            });
+
+            $('#pixelWarCanva').on('click', function() {
+                var canvaEvent = document.getElementById("pixelWarCanva");
+                if(connected){
+                socket.send(JSON.stringify({x: event.offsetX, y: event.offsetY, hexcolor: $('#hexcolorstring').val().replace('#', '')}));
+                paintPixelToCanva(canvaEvent, event.offsetX, event.offsetY, $('#hexcolorstring').val().replace('#', ''));
+
+                }
+            });
+
+            var pixelsJson = {{ pixelsjson|raw}};
+            var canvas = document.getElementById("pixelWarCanva");
+            for(var i = 0; i < pixelsJson.length; i++){
+                var pixel = pixelsJson[i];
+                paintPixelToCanva(canvas, pixel.x, pixel.y, pixel.hexcolor)
+            }
+        });
+
+        function paintPixelToCanva(canva, x, y, hexColor){
+            var ctx = canva.getContext("2d");
+            ctx.fillStyle = "#" + hexColor;
+            ctx.fillRect( x, y, 1, 1 );
+        }
+    </script>
+</body>
+</html>
